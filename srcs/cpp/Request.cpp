@@ -43,10 +43,6 @@ int							Request::GetElementRequest(s_data &d, std::map<int, std::map<std::stri
 	ChecklimitExcept(d, MapConf);
 	CheckUpload(d, MapConf);
 
-	if ((CheckBodySizeConf(d, MapConf) == EXIT_FAILURE) || d._upload.first == false) 
-		return (EXIT_SUCCESS);
-	else
-		UploadFile(d);
 
 	if (GetCorrectMethod() == EXIT_FAILURE)
 	{
@@ -59,6 +55,11 @@ int							Request::GetElementRequest(s_data &d, std::map<int, std::map<std::stri
 		d._error.first = true;
 		d._error.second = 405;
 	}
+
+	if ((CheckBodySizeConf(d, MapConf) == EXIT_FAILURE) || d._upload.first == false) 
+		return (EXIT_SUCCESS);
+	else
+		UploadFile(d);
 
 	this->_AllRequest.clear();
 	

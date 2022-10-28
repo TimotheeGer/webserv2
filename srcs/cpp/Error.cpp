@@ -224,6 +224,8 @@ int		Error::MakeBinErrorPage(int error, s_data &_d) {
 		return (EXIT_FAILURE);
 	_d._content_bin[_d._content_size] = '\0';
 	input.read(_d._content_bin, _d._content_size);
+
+	remove(this->_code_char);
 	// if (_d._content_bin != NULL)
 	// {
 	// 	free(_d._content_bin);

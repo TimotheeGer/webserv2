@@ -25,7 +25,7 @@ Client::Client(int client_socket, std::string port) {
 	this->_d._error_code = 0;
 	this->_d.autoindex = 0;
 	this->_d._upload.first = false;
-	this->_d._upload.second = "";
+	// this->_d._upload.second = "";
 
 	return;
 };
@@ -70,7 +70,7 @@ int Client::RecvRequest(std::map<int, std::map<std::string, t_scop> > &map_serve
 		//on rempli un vector de char pour recup tout le binaire
 		for (int i = 0; i < ret; i++)
 			this->_d._RequestVector.push_back(buff_request[i]);
-		this->_d._request_string.append(buff_request);		
+		this->_d._request_string.append(buff_request, ret);		
 		// PrintVectorRequest();
 		//voir description sur la fonction dans request.cpp
 		if (this->request_r.RequestIsFull(_d) == true)

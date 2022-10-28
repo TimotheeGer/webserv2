@@ -64,6 +64,7 @@ int Open::OpenFiles(s_data &_d, Request &request_r, std::map<std::string, t_scop
 	//avec squon a ouvert(input) on read  dans content_bin
 	input.read(_d._content_bin, _d._content_size);
 	//print
+	remove("body_php");
 	std::cout << C_BOLDRED << "OPEN 3" << C_RESET << std::endl;
 	// PrintContentBin(_d);
 	if (this->_rewrite == true)
@@ -189,7 +190,7 @@ int	Open::CheckConfLocation(s_data &_d, Request &request_r, std::map<std::string
 			std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;	
 			if (!it->second.root.empty())
 			{	
-			std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;
+				std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;
 				this->_root = it->second.root;
 				if (!it->second.rewrite.empty()){
 

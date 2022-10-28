@@ -34,10 +34,11 @@ class Cgi {
         ~Cgi();
 
         int                                     InitEnvCgi(Request &request_r, std::map<std::string, t_scop> &MapConf);
-        int                                        InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf);
+        int                                     InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf);
         void                                    ClearArray(char **tab);
-
         void                                    ClearEnvCgi(void);
+        int									    ClearCgi(int error, char **tab);
+
     private:
 
 

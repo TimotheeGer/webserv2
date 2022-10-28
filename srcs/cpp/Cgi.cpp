@@ -84,47 +84,27 @@ int Cgi::InitEnvCgi(Request &request_r, std::map<std::string, t_scop> &MapConf) 
 // int	Cgi::InterpretCgi(std::string path_get, std::string req_body, std::map<std::string, std::string> _map_request) {
 int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf) {
 
-	// Request _request_r = request_r;
-
 	if (InitEnvCgi(request_r, MapConf) == 500)
-	{
-		ClearEnvCgi();
-	std::cout << "Je suis la 1" << std::endl;
+		return (ClearCgi(500, NULL));
 
-		return (500);
-	}
 	std::string path_ = "body_php";
-	std::cout << "Im here 1" << std::endl;
+	
 	char **tab = (char**)malloc(sizeof(char *) * 3);
+	
 	tab[0] = strdup("./cgi-bin/php-cgi");								// change linux / mac
-	// if (!(tab[0] = strdup("/usr/bin/php-cgi")))
-	// {
-	// 	ClearEnvCgi();
-	// 	ClearArray(tab);
-	// 	return (500);								// change linux / mac
-	// }
-	if (!(tab[1] = strdup(request_r.Get_Path().c_str())))
-	{
-		ClearEnvCgi();
-		ClearArray(tab);
-	std::cout << "Je suis la 2" << std::endl;
 
-		return 500;
-	}
-	std::cout << "Im here 2" << std::endl;
+	// if (!(tab[0] = strdup("/usr/bin/php-cgi")))
+	// 	return (ClearCgi(500, tab));								// change linux / mac
+
+	if (!(tab[1] = strdup(request_r.Get_Path().c_str())))
+		return (ClearCgi(500, tab));
 
 	tab[2] = NULL;
 
 	int pip[2];
-	if (pipe(pip) != 0)
-	{
-		ClearEnvCgi();
-		ClearArray(tab);
-	std::cout << "Je suis la 3" << std::endl;
 
-		return 500;
-	}
-	std::cout << "Im here 3" << std::endl;
+	if (pipe(pip) != 0)
+		return (ClearCgi(500, tab));
 
 	std::string path_two = request_r.Get_Path();
 
@@ -137,30 +117,16 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 	if (pid == 0) 
 	{
 		if (!(chdir(path_two.c_str())))
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-	std::cout << "Je suis la 4" << std::endl;
+			return (ClearCgi(500, tab));
 
-			return 500;
-		}
 		close(pip[1]);
+	
 		if (dup2(pip[0], 0) == -1)
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-	std::cout << "Je suis la 5" << std::endl;
-
-			return 500;
-		}
+			return (ClearCgi(500, tab));
+	
 		if (dup2(this->_tmp_file, 1) == -1)
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-	std::cout << "Je suis la 6" << std::endl;
-
-			return 500;
-		}
+			return (ClearCgi(500, tab));
+		
 		// if (dup2(tmp_file_error, 2) == -1)
 		// 	return 500;
 		close(pip[0]);
@@ -170,57 +136,36 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 	else if (pid > 0)
 	{
 		close(pip[0]);
+		
 		if (request_r._RequestBody.length() && write(pip[1], request_r._RequestBody.c_str(), request_r._RequestBody.length()) <= 0)
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-	std::cout << "Je suis la 7" << std::endl;
-
-			return (500);
-		}
+			return (ClearCgi(500, tab));
+		
 		close(pip[1]);
 
 		int status;
 
 		if (waitpid(pid, &status, 0) == -1)
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-	std::cout << "Je suis la 8" << std::endl;
-
-			return 500;
-		}
+			return (ClearCgi(500, tab));
+		
 		if (WIFEXITED(status) && WEXITSTATUS(status))
-		{
-			ClearEnvCgi();
-			ClearArray(tab);
-			return 502;
-		}
+			return (ClearCgi(502, tab));
 	}
 	else
-	{
-		ClearEnvCgi();
-		ClearArray(tab);
-		return 502;
-	}
-	ClearEnvCgi();
-	ClearArray(tab);
-	std::cout << "Je suis la 9" << std::endl;
-	std::cout << "Im here 4" << std::endl;
+		return (ClearCgi(502, tab));
+
+	ClearCgi(200, tab);
 
 	return (200);
 };
 
 
-void								Cgi::ClearEnvCgi(void){
 
+void								Cgi::ClearEnvCgi(void) {
 
 	if (this->_env_cgi != NULL)
 	{
 		for (unsigned long int i = 0 ; _env_cgi[i] != NULL ; i ++)
-		{
 			free(_env_cgi[i]);
-		}
 	}
 	_env_cgi = NULL;
 }
@@ -231,9 +176,14 @@ void								Cgi::ClearArray(char **tab) {
 	if (tab != NULL)
 	{
 		for (unsigned long int i = 0 ; tab[i] != NULL ; i ++)
-		{
 			free(tab[i]);
-		}
 	}
 	tab = NULL;		
+}
+
+int									Cgi::ClearCgi(int error, char **tab) {
+
+	ClearEnvCgi();
+	ClearArray(tab);
+	return (error);
 }

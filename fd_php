@@ -4,12 +4,14 @@ Content-type: text/html; charset=UTF-8
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
+  <style>
       @import url("https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Hind:wght@400;700&display=swap");
       body {
         width: 70%;
         margin: 0 auto;
         background-color: #e9d5f1;
+		overflow: auto;
+
       }
       h1 {
         font-family: "Hind", sans-serif;
@@ -19,18 +21,27 @@ Content-type: text/html; charset=UTF-8
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        height: 700px;
+        /* height: 700px; */
         justify-content: center;
         justify-items: center;
         /* border: 1px solid blue; */
       }
       .text {
-        opacity: 0.5;
+        /* opacity: 0.5; */
         line-height: 100%;
         align-self: center;
         /* border: 1px solid red; */
         text-align: center;
         display: inline-block;
+      }
+	  .text2 {
+        /* line-height: 100%; */
+        /* opacity: 0.5; */
+
+        /* align-self: center; */
+        text-align: center;
+        /* display: inline-block; */
+        /* border: 1px solid red; */
       }
 	  ul
 	  {
@@ -48,18 +59,20 @@ Content-type: text/html; charset=UTF-8
         margin: 0 auto;
         /* border: 1px solid green; */
       }
-      /* .text_two {
-			  display: flex;
-			  text-align: center;
-			  display: inline-block;
-			  margin: 0 auto;
-			  font-size: 7px;
-			  line-height: 0%;
-			  font-family: "Didact Gothic", sans-serif;
-			} */
-    </style>
+
+
+	  body {
+        font-family: "Hind", sans-serif;
+        text-align: center;
+        padding-top: 100px;
+		width: 90%;
+        margin: 0 auto;
+        background-color: #e9d5f1;
+      }
+
+			</style>
     <meta charset="utf-8" />
-    <title>Post Form</title>
+    <title>Form Delete</title>
     <link
       href="https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png"
       rel="icon"
@@ -79,33 +92,38 @@ Content-type: text/html; charset=UTF-8
         />
 	</a>
       </div>
-      <div class="text">
-        <h1>Try the Post Form</h1>
+      <div class="text" style="opacity: 0.5">
+        <h1>Delete a file from the Folder</h1>
       </div>
-      <div class="text">
-	  <form action="form_post.php" method="post">
-      <ul>
-        <label for="name">User:</label>
-        <input type="text" id="name" name="user_name" />
-      </ul>
-      <ul>
-        <label for="mail">Mail:</label>
-        <input type="email" id="mail" name="user_email" />
-      </ul>
-      <ul>
-        <label for="msg">Msg:</label>
-        <input id="message" name="user_message"></input>
-      </ul>
-      <ul>
-        <button type="submit">Send your message</button>
-      </ul>
-		  User : timtimtitmitm<br>
-	  Mail : <br>
-	  Msg : <br>
-	
-		
-  </form>
-		</div>
+      <div class="text2">
+
+
+	  <div id="text"><img src='../upload/logo.png' alt='logo.png' style='max-width:20%' id="logo.png"/> <br><br>
+
+<button type="button" id="del_button" onclick="deleteSomething('../upload/logo.png')">Delete this image</button></div><br><div id="text"><img src='../upload/maison.jpg' alt='maison.jpg' style='max-width:20%' id="maison.jpg"/> <br><br>
+
+<button type="button" id="del_button" onclick="deleteSomething('../upload/maison.jpg')">Delete this image</button></div><br><div id="text"><img src='../upload/nike.jpg' alt='nike.jpg' style='max-width:20%' id="nike.jpg"/> <br><br>
+
+<button type="button" id="del_button" onclick="deleteSomething('../upload/nike.jpg')">Delete this image</button></div><br><div id="text"><img src='../upload/nike.png' alt='nike.png' style='max-width:20%' id="nike.png"/> <br><br>
+
+<button type="button" id="del_button" onclick="deleteSomething('../upload/nike.png')">Delete this image</button></div><br><div id="text"><img src='../upload/webserv.png' alt='webserv.png' style='max-width:20%' id="webserv.png"/> <br><br>
+
+<button type="button" id="del_button" onclick="deleteSomething('../upload/webserv.png')">Delete this image</button></div><br>		</div>
+		<script>
+	async function deleteSomething(path) {
+		await doDelete(path);
+		window.location.reload();
+	}
+
+	async function doDelete(path) {
+		return fetch(path, {
+			method: 'DELETE'
+		})
+	}
+</script>
+
+      </div>
     </div>
   </body>
 </html>
+

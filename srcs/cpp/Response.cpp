@@ -46,11 +46,11 @@ int Response::MakeResponse(Request &request_r, s_data &_d) {
 	// std::cout << C_RED << "_d._response = "  << _d._response << C_RESET << std::endl;
 	std::cout << C_RED << "ERROR 2.3" << C_RESET << std::endl;
 	
-	// if (_d._content_bin != NULL)
-	// {
-	// 	free(_d._content_bin);
-	// 	_d._content_bin = NULL;
-	// }
+	if (_d._content_bin != NULL)
+	{
+		free(_d._content_bin);
+		_d._content_bin = NULL;
+	}
 	// std::cout 	<< C_BOLDCYAN << "--------------------Response + Bin--------------------" << C_RESET << std::endl << std::endl;
 	// std::cout	<< C_BOLDCYAN << 			_d._http << C_RESET << std::endl;
 	// std::cout	<< C_BOLDCYAN << "--------------------Response + Bin--------------------" << C_RESET << std::endl << std::endl;
