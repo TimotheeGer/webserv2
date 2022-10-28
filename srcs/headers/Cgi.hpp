@@ -37,7 +37,7 @@ class Cgi {
         int                                     InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf);
         void                                    ClearArray(char **tab);
         void                                    ClearEnvCgi(void);
-        int									    ClearCgi(int error, char **tab);
+        int									    ClearCgi(int error);
 
     private:
 
@@ -49,9 +49,9 @@ class Cgi {
         // int                                     tmp_file_error;
 
         // char                                  tab_arg;
-        char**                                  _env_cgi;
-        // std::vector<char >                     _env_cgi;
-        std::vector<char>                     _env_cgi_two;
+        // char**                                  _env_cgi;
+        std::vector<char *>                     _env_cgi;
+        std::vector<char *>                     _env_cgi_two;
 
         std::map<std::string, std::string>      _map_cgi_env;
         std::string                             _req_body;

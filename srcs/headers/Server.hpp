@@ -22,6 +22,7 @@
 #include <fstream>
 #include <map>
 #include <vector>
+#include <csignal>
 
 #include "Global.hpp"
 #include "Colors.hpp"

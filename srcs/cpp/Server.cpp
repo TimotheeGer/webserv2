@@ -24,20 +24,21 @@ Server::~Server() {
 void	signal_handler(int sign) {
 
 	(void)sign;
-	std::cout << std::endl << "Are your sure ?" << std::endl;
+	std::cout << std::endl << "Clear Server" << std::endl;
 	
 }
 
 int 	signals() {
 
-	signal(SIGINT, &signal_handler);
-	signal(SIGPIPE, SIG_IGN);
+	std::signal(SIGINT, &signal_handler);
+	std::signal(SIGPIPE, SIG_IGN);
 	return EXIT_SUCCESS;
 }
  
  
 int Server::WaitConnection(std::map<int, std::map<std::string, t_scop> > &map_server) {
 
+	int run = 1;
 	std::cout << C_BOLDYELLOW << "mapserver size = " << map_server.size() << C_RESET << std::endl;
 	if (map_server.size() == 0)
 	{
@@ -48,13 +49,14 @@ int Server::WaitConnection(std::map<int, std::map<std::string, t_scop> > &map_se
 	if (InitSocketSocketMasters(map_server) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	std::cout << C_YELLOW << "\n- Launch Server -\n" << C_RESET << std::endl;
-	while(true)
+	while(run)
 	{
-		// if (signals())
-		// {
-		// 	ClearServer();
-		// 	exit(EXIT_FAILURE);
-		// }
+		if (signals())
+		{
+			run = 0;
+			ClearServer();
+			exit(EXIT_FAILURE);
+		}
 		FD_ZERO(&_read_sockets);
 		FD_ZERO(&_write_sockets);
 		//boucle sur les socket master et les SET dans rfds et wfds
