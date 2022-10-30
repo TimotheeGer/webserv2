@@ -34,22 +34,19 @@ int							Request::GetElementRequest(s_data &d, std::map<int, std::map<std::stri
 	if (GetAllElement() == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	
-	PrintMapRequest();
+	// PrintMapRequest();
 
 	std::map<std::string, t_scop> &MapConf = GetMapConf(d, map_server);
-	
 	
 	TreatmentPath(d);
 	ChecklimitExcept(d, MapConf);
 	CheckUpload(d, MapConf);
-
 
 	if (GetCorrectMethod() == EXIT_FAILURE)
 	{
 		d._error.first = true;
 		d._error.second = 400;
 	}
-
 	if (HandleMethod(d) == 405)
 	{
 		d._error.first = true;
@@ -75,11 +72,9 @@ std::string						Request::GetHostForConf(std::string host) {
 
 	std::string test = host.substr(0, host.find_last_of(":"));
 
-	std::cout << C_BOLDGREEN << "-----------------GetHostForConf---------------" << C_RESET << std::endl;
-
-	std::cout << C_BOLDGREEN << "host = [" << test << "]" << C_RESET << std::endl; 
-
-	std::cout << C_BOLDGREEN << "-----------------GetHostForConf---------------" << C_RESET << std::endl;
+	// std::cout << C_BOLDGREEN << "-----------------GetHostForConf---------------" << C_RESET << std::endl;
+	// std::cout << C_BOLDGREEN << "host = [" << test << "]" << C_RESET << std::endl; 
+	// std::cout << C_BOLDGREEN << "-----------------GetHostForConf---------------" << C_RESET << std::endl;
 
 	return (test);
 }
@@ -108,7 +103,7 @@ std::map<std::string, t_scop>&	Request::GetMapConf(s_data &d, std::map<int, std:
 				{
 					if (it2->second.server_name[i] == host)
 					{
-						std::cout << C_BOLDCYAN << "server = [" << it->first << "]" << C_RESET << std::endl;
+						// std::cout << C_BOLDCYAN << "server = [" << it->first << "]" << C_RESET << std::endl;
 						d._server = it->first;
 						return (it->second);
 					}
@@ -126,7 +121,7 @@ std::map<std::string, t_scop>&	Request::GetMapConf(s_data &d, std::map<int, std:
 		{
 			if (it2->first == "server" && it2->second.listen == port)
 			{
-				std::cout << C_BOLDCYAN << "server 2 = [" << it->first << "]" << C_RESET << std::endl;
+				// std::cout << C_BOLDCYAN << "server 2 = [" << it->first << "]" << C_RESET << std::endl;
 				d._server = it->first;
 				return (it->second);
 			}
@@ -160,8 +155,6 @@ int		Request::ClearPath(s_data &d) {
 	std::string path = Get_Path();
 	std::string::iterator it = path.begin();
 	
-	// std::cout << C_BOLDBLUE << "CLEAR PATH = [" << path << "]" << C_RESET << std::endl;
-
 	for (long unsigned int i = 0; i < path.size(); i++)
 	{
 		if (path[i] == '/' && path[i + 1] == '/')
@@ -171,11 +164,7 @@ int		Request::ClearPath(s_data &d) {
 		}
 	}
 	if ((path[path.size() - 1] == '/') && (path.size() > 1))
-	{
 		path.erase(path.size() - 1);
-		// path.pop_back();
-	}
-	// std::cout << C_BOLDBLUE << "CLEAR PATH 1 = [" << path << "]" << C_RESET << std::endl;
 
 	this->Set_Path(path);
 
@@ -209,12 +198,12 @@ int 	Request::HandleMethod(s_data &d) {
 	{
 		if (Get_Method() == "DELETE")
 		{
-			std::cout << " PATH IS = " << Get_Path() << std::endl;
 			if (Get_Path().find("/upload/") != std::string::npos)
 			{
-				std::cout << d._limit_DELETE << std::endl;
 				std::string path = "./srcs/www" + Get_Path(); // add d._root between
 				std::remove(path.c_str());
+				std::cout << C_BOLDBLUE << "Client: FD[" << d._fd_client << "] PORT[" << d._port << "]" << C_GREEN << " Delete file: " << C_RESET  
+					<< Get_Path() << std::endl << std::endl;
 			}
 		}
 	}
@@ -291,17 +280,14 @@ int				Request::ChecklimitExcept(s_data &_d, std::map<std::string, t_scop> &MapC
 
 		if (it->first == this->Get_FirstPath())
 		{
-			std::cout << C_BOLDRED << "LIMIT 1" << C_RESET << std::endl;
 			if (it->second.limit_except.size() != 0)
 			{
-			std::cout << C_BOLDRED << "LIMIT 2" << C_RESET << std::endl;
 				_d._limit_GET = false;
 				_d._limit_POST = false;
 				_d._limit_DELETE = false;
 
 				for (long unsigned int i = 0; i < it->second.limit_except.size(); i++)
 				{
-			std::cout << C_BOLDRED << "LIMIT 3" << C_RESET << std::endl;
 					if (it->second.limit_except[i] == "GET")
 						_d._limit_GET = true;					
 					if (it->second.limit_except[i] == "POST")
@@ -324,8 +310,6 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 	std::map<std::string, t_scop>::iterator it = MapConf.begin();
 	std::map<std::string, t_scop>::iterator ite = MapConf.end();
 	
-	std::cout << C_BOLDGREEN << "----------------UPLOAD------------" << C_RESET << std::endl;
-
 	if (MapConf["server"].upload.size() > 0)
 	{
 		if (!MapConf["server"].upload[0].empty())
@@ -353,7 +337,6 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 				{
 					d._upload.first = true;
 					d._upload.second = it->second.upload[1];
-					std::cout << C_BOLDGREEN << "upload path = " << d._upload.second << C_RESET << std::endl;
 				}
 				else if (it->second.upload[0] == "off")
 				{
@@ -370,14 +353,9 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 int		Request::CheckPathUpload(std::string path) {
 	
 	struct stat statbuf;
-	std::cout << C_BLUE << "------------CHECKPATH-------------" << C_RESET << std::endl;
-	std::cout << C_BLUE << "PATH is directory ? = " << path << C_RESET << std::endl;
 	if (stat(path.c_str(), &statbuf) != 0)
-	{
-		std::cout << C_BOLDRED << "Is error" << C_RESET << std::endl; 
 		return 0;
-	}
-	std::cout << C_BOLDRED << S_ISDIR(statbuf.st_mode) << C_RESET << std::endl; 
+	// std::cout << C_BOLDRED << S_ISDIR(statbuf.st_mode) << C_RESET << std::endl; 
 	return (S_ISDIR(statbuf.st_mode));
 }
 
@@ -395,7 +373,7 @@ int		Request::GetHeaderBody(s_data &d) {
 	if ((pos = temp.find("\r\n\r\n")) != std::string::npos)
 		this->_HeaderBody = temp.erase(pos, std::string::npos);
 	
-	PrintHeaderBody();
+	// PrintHeaderBody();
 	
 	return (EXIT_SUCCESS);
 }
@@ -423,16 +401,10 @@ int		Request::CheckBodySizeConf(s_data &d, std::map<std::string, t_scop> &MapCon
 	
 	this->GetFirstPath(d);
 
-	std::cout << C_BOLDYELLOW << "First Path = [" << this->Get_FirstPath() << "]" << C_RESET << std::endl;  
-	std::cout << C_BOLDYELLOW << "Request body = [" << this->_RequestBody << "]" << C_RESET << std::endl;  
-	std::cout << C_BOLDYELLOW << "Request body = [" << this->_RequestBody.size() << "]" << C_RESET << std::endl;  
-
 	if (!MapConf["server"].client_max_body_size.empty())
 	{
-			std::cout << "TEST MAX BODY 1" << std::endl;
 		if (this->Get_OnlyBody().size() > (size_t)std::atoi(MapConf["server"].client_max_body_size.c_str()) || this->_RequestBody.size() > (size_t)std::atoi(MapConf["server"].client_max_body_size.c_str()))
 		{
-			std::cout << "TEST MAX BODY 2" << std::endl;
 			d._error.first = true;
 			d._error.second = 413;
 			return (EXIT_FAILURE);
@@ -465,7 +437,7 @@ int	Request::ParseBodyRequest(void) {
 	if ((Split_tab(this->_HeaderBody, tab, " \r\n")) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 
-	PrintTabHeaderBody(tab);
+	// PrintTabHeaderBody(tab);
 	//on boucle sur le tableau de string et on chercher filename pour recup ce quil ya entre parenthese
 	for (long unsigned int i = 0; i < tab.size(); i++)
 	{
@@ -490,7 +462,6 @@ int		Request::UploadFile(s_data &d) {
 
 		if (CheckPathUpload(path_test) != 1)
 		{
-			std::cout << C_BOLDYELLOW << "TEST CHECK UPLOAD" << C_RESET << std::endl;
 			d._error.first = true;
 			d._error.second = 500;
 			return (EXIT_SUCCESS);
@@ -503,11 +474,14 @@ int		Request::UploadFile(s_data &d) {
 		{
 			path = "./srcs/www/" + this->_FileNameBody;
 			ofs.open(path.c_str(), std::ofstream::out);
-			// std::cout << C_RqED << "OPEN ERROR" << C_RESET << std::endl;
 			// return(EXIT_FAILURE);
 		}
 		ofs << this->_OnlyBody;
 		ofs.close();
+
+		std::cout << C_BOLDBLUE << "Client: FD[" << d._fd_client << "] PORT[" << d._port << "]" << C_GREEN << " Upload file: " << C_RESET  
+					<< this->_FileNameBody << " to " << d._upload.second << std::endl << std::endl;
+		
 	}
 	return (EXIT_SUCCESS);
 }
@@ -778,10 +752,7 @@ std::string								Request::Get_OnlyBody(void) {
 
 void 	Request::ClearRequest(void) {
 
-	std::cout << "BEFORE :" << _MapRequest.size() << std::endl;
 	this->_MapRequest.clear();
-	std::cout <<"AFTER :" << _MapRequest.size() << std::endl;
-
 	return ;
 }
 

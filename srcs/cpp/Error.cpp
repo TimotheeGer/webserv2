@@ -166,7 +166,6 @@ int Error::ErrorPage(int error) {
 int 	Error::LoadDefaultErrorPage(int error, s_data &_d) {
 
 	std::string _error = "./srcs/www" + _d._error_page.second;
-	std::cout << "test " << std::endl;
 	std::ifstream input(_error.c_str(), std::ios::binary);
 	if (!input.is_open())
 	{

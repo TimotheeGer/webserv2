@@ -28,26 +28,17 @@ int Open::OpenFiles(s_data &_d, Request &request_r, std::map<std::string, t_scop
 	if (_d._error.first == true)
 		return (error_r.MakeBinErrorPage(_d._error.second, _d));
 
-	std::cout << C_BOLDGREEN << "OPEN PATH [" << path.c_str() << "]" << C_RESET << std::endl;
-	
 	std::ifstream input(path.c_str(), std::ios::binary);
 
 	if (IsDirectory(path.c_str()) == 1 && _d.autoindex == 0)
-	{
-		std::cout << C_BOLDRED << "IS DIRECTORY & AUTOINDEX OFF" << C_RESET << std::endl;
 		return (error_r.MakeBinErrorPage(404, _d));			//* Fichier manquant -> 404
-	}
-	std::cout << C_BOLDRED << "OPEN 1" << C_RESET << std::endl;
+
 	if (IsDirectory(path.c_str()) == 1 && _d.autoindex == 1) //* If autoindex afficher et path es un dossier
-	{											
-		std::cout << C_BOLDRED << "IS DIRECTORY & AOTOINDEX ON" << C_RESET << std::endl;
 		return (GenerateAutoIndex(_d, request_r));
-	}
+
 	if (!input.is_open())
-	{
-		std::cout << "ERROR IS OPEN  " << std::endl;
 		return (error_r.MakeBinErrorPage(404, _d));
-	}
+
 	//calcul la taille
 	input.seekg(0, std::ios::end);
 	_d._content_size = input.tellg();
@@ -56,7 +47,6 @@ int Open::OpenFiles(s_data &_d, Request &request_r, std::map<std::string, t_scop
 	//taille long converti en char*
 	std::sprintf(_d._c_size, "%lu", _d._content_size);
 	
-	std::cout << C_BOLDRED << "OPEN 2" << C_RESET << std::endl;
 	//malloc la taille de s'quon a ouvert au dessus
 	if (!(_d._content_bin = (char*)malloc(sizeof(char) * (_d._content_size + 1))))
 		return (EXIT_FAILURE);
@@ -65,7 +55,6 @@ int Open::OpenFiles(s_data &_d, Request &request_r, std::map<std::string, t_scop
 	input.read(_d._content_bin, _d._content_size);
 	//print
 	remove("body_php");
-	std::cout << C_BOLDRED << "OPEN 3" << C_RESET << std::endl;
 	// PrintContentBin(_d);
 	if (this->_rewrite == true)
 		return (301);
@@ -87,10 +76,7 @@ int				Open::GenerateAutoIndex(s_data &_d, Request &request_r) {
 	std::ifstream input2(path.c_str(), std::ios::binary);
 	//open le fichier qui contient le html
 	if (!input2.good())
-	{
-		std::cout << C_BOLDRED << "AUTOINDEX 11" << C_RESET << std::endl;
 		return (error_r.MakeBinErrorPage(404, _d));		//* Fichier manquant -> 404
-	}
 	
 	//calcul la taille 
 	input2.seekg(0, std::ios::end);
@@ -99,7 +85,6 @@ int				Open::GenerateAutoIndex(s_data &_d, Request &request_r) {
 	
 	//taille long converti en char*
 	std::sprintf(_d._c_size, "%lu", _d._content_size);
-		std::cout << C_BOLDRED << "AUTOINDEX 4" << C_RESET << std::endl;
 	
 	//malloc la taille de s'quon a ouvert au dessus
 	if (!(_d._content_bin = (char*)malloc(sizeof(char) * _d._content_size + 1)))
@@ -107,10 +92,7 @@ int				Open::GenerateAutoIndex(s_data &_d, Request &request_r) {
 	_d._content_bin[_d._content_size] = '\0';
 	//avec squon a ouvert(input2) on read  dans content_bin
 	input2.read(_d._content_bin, _d._content_size);
-	//print
-		std::cout << C_BOLDRED << _d._content_bin  << C_RESET << std::endl;
 	// PrintContentBin(_d);
-
 	return (200);
 }
 
@@ -144,13 +126,10 @@ int Open::SetAutoindex(Request &request_r) {
 		path = request_r.Get_Path() + "/";
 		path2 = request_r.Get_Path().substr(request_r.Get_Path().find("./srcs/www") + 10);	
 	}
-	// std::string index = "./cgi-bin/tree \"" + path + "\" -H " + path2 + " -L 1 -T " + path + " --noreport --charset en-US";
 	std::string index = "./cgi-bin/tree \"" + path + "\" -H " + path2 + " --noreport --charset en-US";
 	std::cout << C_GREEN << index << C_RESET << std::endl;
 	std::string launch = ExecuteCommand(index.c_str(), request_r);
-
 	// PrintAutoIndex(index, launch);
-
 	return (EXIT_SUCCESS);
 }
 
@@ -187,22 +166,19 @@ int	Open::CheckConfLocation(s_data &_d, Request &request_r, std::map<std::string
 
 		if (it->first == request_r.Get_Path())
 		{
-			std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;	
 			if (!it->second.root.empty())
 			{	
-				std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;
 				this->_root = it->second.root;
-				if (!it->second.rewrite.empty()){
-
+				if (!it->second.rewrite.empty())
+				{
 					this->_rewrite = true;
 					this->_root += "/" + it->second.rewrite;
 				}
 				else if (!it->second.index.empty() && _d.autoindex == 0)
 					this->_root += "/" + it->second.index;
 				else
-				{
 					this->_root += request_r.Get_Path();
-				}
+
 				set = true;
 			}
 			else
@@ -236,8 +212,6 @@ int	Open::CheckConfLocation(s_data &_d, Request &request_r, std::map<std::string
 
 	request_r.Set_Path(this->_root);
 
-	std::cout << C_BOLDYELLOW << "ROOT OPEN = [" << this->_root << "]" << C_RESET << std::endl;
-
 	return (EXIT_SUCCESS);
 }
 
@@ -259,23 +233,17 @@ int				Open::CheckErrorPage(s_data &_d, Request &request_r, std::map<std::string
 
 		if (it->first == request_r.Get_FirstPath())
 		{
-			// std::cout << " cgi size is "<< it->second.cgi.size() << std::endl;
 			if (it->second.error_page.size() == 2)
 			{
-				std::cout << "TEST CHECKCONFCGI 2" << std::endl;
 				if (!it->second.error_page[0].empty() && !it->second.error_page[1].empty())
 				{
-					std::cout << C_BOLDGREEN << "second.error_page[0] = " << it->second.error_page[0] << C_RESET << std::endl;
-					std::cout << C_BOLDGREEN << "second.error_page[1] = " << it->second.error_page[1] << C_RESET << std::endl;
 					_d._error_page.first = std::atoi(it->second.error_page[0].c_str());
 					_d._error_page.second = it->second.error_page[1]; 
 				}
 			}
 		}
 	}
-	//print pair
 	// PrintPairErrorPage(_d._error_page);
-
 	return (EXIT_SUCCESS);
 }
 
@@ -303,14 +271,10 @@ int	Open::CheckConfCgi(s_data &_d, Request &request_r, std::map<std::string, t_s
 
 		if (it->first == request_r.Get_FirstPath())
 		{
-			std::cout << " cgi size is "<< it->second.cgi.size() << std::endl;
 			if (it->second.cgi.size() == 2)
 			{
-				std::cout << "TEST CHECKCONFCGI 2" << std::endl;
 				if (it->second.cgi[0] == ".php" && it->second.cgi[1] == "php-cgi")
 				{
-					std::cout << C_BOLDGREEN << "second.cgi[0] = " << it->second.cgi[0] << C_RESET << std::endl;
-					std::cout << C_BOLDGREEN << "second.cgi[1] = " << it->second.cgi[1] << C_RESET << std::endl;
 					this->_cgi = true;
 					break; 
 				}
@@ -337,16 +301,10 @@ int				Open::CheckAutoIndex(s_data &_d, Request &request_r, std::map<std::string
 
 		if (it->first == request_r.Get_FirstPath())
 		{
-			std::cout << C_BOLDCYAN << "Get path = " << request_r.Get_Path() << C_RESET << std::endl;
-			// location = true;
 			if (!it->second.autoindex.empty())
 			{
-				std::cout << C_BOLDRED << "AUTOINDEX 1" << C_RESET << std::endl;
 				if (it->second.autoindex == "on")
-				{
-				std::cout << C_BOLDRED << "AUTOINDEX 2" << C_RESET << std::endl;
 					_d.autoindex = 1;
-				}
 				break;
 			}
 		}
@@ -363,21 +321,18 @@ int				Open::CheckAutoIndex(s_data &_d, Request &request_r, std::map<std::string
 std::string Open::ChooseFile(std::string path, Request &request_r, std::map<std::string, t_scop> &MapConf, s_data &_d) {
 
 	int error = 0;
-	std::cout << C_BOLDCYAN << "CGI path = "<< path << C_RESET << std::endl;
 
 	if (path.find(".php", 0) != std::string::npos)
 	{
 		//* Interpreter le php avec CGI
 		if (this->_cgi == false)
 		{
-			std::cout << C_BOLDCYAN << "CGI 1" << C_RESET << std::endl;
 			_d._error.first = true;
 			_d._error.second = 500;
 			return ("");			
 		}
 		if ((error = cgi_r.InterpretCgi(request_r, MapConf)) != 200)
 		{
-				std::cout << C_BOLDCYAN << "CGI 2" << C_RESET << std::endl;
 				_d._error.first = true;
 				_d._error.second = error;
 				return ("");
@@ -405,15 +360,9 @@ int Open::IsFavicon(Request &request_r) {
 int Open::IsDirectory(const char *path) {
 
 	struct stat statbuf;
-	std::cout << C_RED << "------------test directory-------------" << C_RESET << std::endl;
-	std::cout << C_RED << "PATH is directory ? = " << path << C_RESET << std::endl;
 	if (stat(path, &statbuf) != 0)
-	{
-		std::cout << C_BOLDRED << "Is error" << C_RESET << std::endl; 
 		return 0;
-	}
-	std::cout << C_BOLDRED << S_ISDIR(statbuf.st_mode) << C_RESET << std::endl; 
-	std::cout << C_RED << "------------test directory-------------" << C_RESET << std::endl;
+	// std::cout << C_BOLDRED << S_ISDIR(statbuf.st_mode) << C_RESET << std::endl; 
 	return (S_ISDIR(statbuf.st_mode));
 }
 

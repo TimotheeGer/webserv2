@@ -23,37 +23,21 @@ Response::~Response(void) { return; };
 */
 
 int Response::MakeResponse(Request &request_r, s_data &_d) {
-	(void)request_r;
-	std::cout << C_RED << "ERROR REPONSE 2.1" << C_RESET << std::endl;
-
-	std::cout << C_BOLDYELLOW << "reponse size = [" << _d._response.size() << "]" << C_RESET
-				<< " content size = [" << _d._content_size + 1 << "]" << C_RESET << std::endl;
 	
 	_d._response = WriteResponse(request_r, _d);
 	
 	if (!(_d._http = (char *)malloc(sizeof(char) * (_d._response.size() + (_d._content_size + 1)))))
-	{
-		std::cout << C_RED << "ERROR REPONSE EXIT" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
-	}
-	std::cout << C_RED << "ERROR REPONSE 2.2" << C_RESET << std::endl;
-
-
 
 	memset(_d._http, 0, _d._response.size() + _d._content_size + 1);
 	memcpy(_d._http, _d._response.c_str(), _d._response.size());
 	memcpy(_d._http + strlen(_d._http), _d._content_bin, _d._content_size);
-	// std::cout << C_RED << "_d._response = "  << _d._response << C_RESET << std::endl;
-	std::cout << C_RED << "ERROR 2.3" << C_RESET << std::endl;
 	
 	if (_d._content_bin != NULL)
 	{
 		free(_d._content_bin);
 		_d._content_bin = NULL;
 	}
-	// std::cout 	<< C_BOLDCYAN << "--------------------Response + Bin--------------------" << C_RESET << std::endl << std::endl;
-	// std::cout	<< C_BOLDCYAN << 			_d._http << C_RESET << std::endl;
-	// std::cout	<< C_BOLDCYAN << "--------------------Response + Bin--------------------" << C_RESET << std::endl << std::endl;
 	return (EXIT_SUCCESS);
 };
 
@@ -80,31 +64,22 @@ std::string Response::WriteResponse(Request &request_r, s_data &_d) {
 	}
 	else
 	{
-		if (_d._error_code == 200 || _d._error_code == 301) {
-			std::cout << C_BOLDMAGENTA << "**********************TESTREPONSE1***********************" << C_RESET << std::endl;
+		if (_d._error_code == 200 || _d._error_code == 301)
+		{
 			if (_d.autoindex == 1)
-			{
 				content_type = content_type + "Content-Type: " + "text/html" + "\n";
-				// _d.autoindex = 0;
-			}
 			else
-			{
 				content_type = content_type + "Content-Type: " + this->mimes_r.getTypes(request_r.Get_Extension()) + "\n";			
-			}
-			content_length = content_length + "Content-Length: " + _d._c_size + "\n\n";
 
+			content_length = content_length + "Content-Length: " + _d._c_size + "\n\n";
 		}
 		else if (error_r.IsErrorCode(_d._error_code) == EXIT_SUCCESS) {
 			
-			content_type = content_type + "Content-Type: "
-										+ "text/html" + "\n";
+			content_type = content_type + "Content-Type: " + "text/html" + "\n";
 			content_length = content_length + "Content-Length: " + _d._c_size + "\n\n";
 		}
 		etiquette = etiquette + http + code + content_type + content_length;
 	}
-	std::cout << C_BOLDMAGENTA << "WriteResponse ERROR 1" << C_RESET << std::endl;
-	std::cout << C_BOLDMAGENTA << "Etiquette = [" << etiquette << "]" << C_RESET << std::endl;
-
 	return (etiquette);
 };
 

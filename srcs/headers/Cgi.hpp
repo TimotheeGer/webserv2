@@ -49,8 +49,8 @@ class Cgi {
         // int                                     tmp_file_error;
 
         // char                                  tab_arg;
-        // char**                                  _env_cgi;
-        std::vector<char *>                     _env_cgi;
+        char**                                  _env_cgi;
+        // std::vector<char *>                     _env_cgi;
         std::vector<char *>                     _env_cgi_two;
 
         std::map<std::string, std::string>      _map_cgi_env;

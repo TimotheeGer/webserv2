@@ -20,31 +20,35 @@ Conf::~Conf(void) { return; };
 int Conf::WorkConf(int ac, char **av) {
 
 	if (OpenConf(ac, av) == EXIT_FAILURE)
+	{
+		std::cerr << C_RED << "Error problem opening configuration file" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
+	}
 	if (RemoveComment() == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	if (CheckSyntax() == EXIT_FAILURE)
 	{
-		std::cerr << C_BOLDRED << "ERROR SYNTAX" << C_RESET << std::endl;
+		std::cerr << C_BOLDRED << "Error syntax configuration file" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
 	}
 	if (SplitServerScop() == EXIT_FAILURE)
+	{
+		std::cerr << C_BOLDRED << "Error syntax configuration file" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
+	}
 	if (FindLocation() == EXIT_FAILURE)
 	{
-		std::cerr << C_BOLDRED << "ERROR SYNTAX" << C_RESET << std::endl;
+		std::cerr << C_BOLDRED << "Error syntax configuration file" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
 	}
 	
 	MakeServerNameDefault();
 
-	PrintValConf();
-
 	GetPort();
 
+	// PrintValConf();
 
 	return (EXIT_SUCCESS);
-
 }
 
 
@@ -88,12 +92,12 @@ int		Conf::GetPort(void) {
 		}
 	}
 
-	std::cout << C_BOLDGREEN << "------------------port tab---------------" << C_RESET << std::endl;
-	for (size_t i = 0; i < port.size(); i++)
-	{
-		std::cout << C_BOLDGREEN << "port tab = [" << port[i] << "]" << C_RESET << std::endl;
-	}
-	std::cout << C_BOLDGREEN << "------------------port tab---------------" << C_RESET << std::endl;
+	// std::cout << C_BOLDGREEN << "------------------port tab---------------" << C_RESET << std::endl;
+	// for (size_t i = 0; i < port.size(); i++)
+	// {
+	// 	std::cout << C_BOLDGREEN << "port tab = [" << port[i] << "]" << C_RESET << std::endl;
+	// }
+	// std::cout << C_BOLDGREEN << "------------------port tab---------------" << C_RESET << std::endl;
 
 	return (EXIT_SUCCESS);
 }
@@ -109,26 +113,28 @@ int Conf::OpenConf(int ac, char **av) {
 
 	if (ac != 2)
 	{
-		std::cout << "Open default.conf" << std::endl;
+		std::cout << C_MAGENTA << "Absence of configuration file, the default configuration file will be opened" << C_RESET << std::endl;
 		return (Open_and_return_string("./conf/default.conf"));
 	}
 
 	std::string av_str = av[1];
-	av_str = "./conf/" + av_str;
+	
+	if (av_str.find("./conf/") == std::string::npos)
+		av_str = "./conf/" + av_str;
+	
 	if (av_str.substr(av_str.find_last_of(".") + 1) == "conf")
 	{
-		std::cout << "2 CONF av_str = " << av_str << std::endl;
 		if (Open_and_return_string(av_str.c_str()) == EXIT_FAILURE)
 		{
-			std::cout << "Open custom.conf fail default conf open" << std::endl;
+			std::cout << C_RED << "Error while opening the selected configuration file, the default configuration file will be opened" << C_RESET << std::endl;
 			return (Open_and_return_string("./conf/default.conf"));
 		}
-		std::cout << "Open custom.conf" << std::endl;
+		std::cout << C_GREEN << "Configuration file : " << av[1] << " is open" << C_RESET << std::endl;
 		return (EXIT_SUCCESS);
 	}
 	else
 	{
-		std::cout << "Open default.conf 2" << std::endl;
+		std::cout << C_MAGENTA << "Absence of configuration file, the default configuration file will be opened" << C_RESET << std::endl;
 		return (Open_and_return_string("./conf/default.conf"));
 	}
 	return (EXIT_SUCCESS);
@@ -271,10 +277,7 @@ int		Conf::SplitServerScop(void) {
 		}
 	}
 	if (brakette != 0)
-	{
-		std::cout << C_BOLDMAGENTA << "ERRROR BRAKETTE !!!" << C_RESET << std::endl;
 		return (EXIT_FAILURE);
-	}
 
 	// PrintServerScop();
 
@@ -299,15 +302,9 @@ int Conf::FindLocation(void) {
 		if (CheckListen(tab) == false)
 			return (EXIT_FAILURE);
 
-		for (long unsigned int i = 0; i < tab.size(); i++)
-			std::cout << C_BOLDBLUE << "[" << i << "][" << tab[i] << "]" << C_RESET << std::endl;
-		std::cout << C_RED << "---------------------------------------------------------------------------" << C_RESET << std::endl;
-		
 		if (GetScopeServer(tab, map) == EXIT_FAILURE)
-		{
-			std::cout << C_BOLDRED << "ERROR LISTEN" << C_RESET << std::endl;
 			return (EXIT_FAILURE);
-		}
+
 		if (GetScopeLocation(tab, map) == EXIT_FAILURE)
 			return (EXIT_FAILURE);
 
@@ -327,28 +324,20 @@ bool	Conf::CheckListen(std::vector<std::string> tab) {
 	for (long unsigned int i = 0; i < tab.size(); i++)
 	{
 		if (tab[i] == "listen")
-		{
-			std::cout << C_RED << "tab = [" << tab[i] << "]" << C_RESET << std::endl;
 			nb++;
-		}
 	}
 
-	std::cout << C_RED << "NB = [" << nb << "]" << C_RESET << std::endl;
 	if (nb > 1)
-	{
-	std::cout << C_RED << "NB 2 = [" << nb << "]" << C_RESET << std::endl;
 		return (false);
-	}
+
 	return (true);
 }
 
 
 int		Conf::GetScopeServer(std::vector<std::string> &tab, std::map<std::string, t_scop> &map) {
 
-	//* check a la fin ";"
 	std::string	path;
 	std::string	tmp;
-	// bool		b_listen = false;
 
 	for (long unsigned int i = 0; i < tab.size(); i++)
 	{

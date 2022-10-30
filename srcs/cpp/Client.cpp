@@ -51,17 +51,14 @@ int Client::RecvRequest(std::map<int, std::map<std::string, t_scop> > &map_serve
 	bzero(&buff_request, sizeof(buff_request));
     int ret = 0;
 	
-	std::cout << C_BOLDMAGENTA << "RECV : Client = FD[" << this->GetFd() << "] PORT[" << this->GetPort() << "]" << C_RESET << std::endl;
 	
 	if ((ret = recv( this->_d._fd_client , buff_request, 2048, 0)) == 0) //if 0 client deconnecter
 	{
-		PrintMessageError("RECV", "1");
 		this->_d._read_fail = true;
 		return (EXIT_SUCCESS);
 	}
 	else if (ret < 0) // if read < 0 c'est une error
 	{
-		PrintMessageError("RECV", "2");
 		this->_d._read_fail = true;
 		return (EXIT_SUCCESS);
 	}
@@ -72,24 +69,23 @@ int Client::RecvRequest(std::map<int, std::map<std::string, t_scop> > &map_serve
 			this->_d._RequestVector.push_back(buff_request[i]);
 		this->_d._request_string.append(buff_request, ret);		
 		// PrintVectorRequest();
-		//voir description sur la fonction dans request.cpp
+		
 		if (this->request_r.RequestIsFull(_d) == true)
 		{
 			this->_d._read = true;
 			//mettre une val pour dire que tout es complet pour le moment ou lon va send()
 	    	this->request_r.GetElementRequest(_d, map_server);
-			std::cout << C_RED << "ERROR 1" << C_RESET << std::endl;
+			
+			std::cout << C_BOLDBLUE << "Client: FD[" << this->GetFd() << "] PORT[" << this->GetPort() << "]" << C_GREEN << " Receive[" << request_r.Get_Method() << "]" << C_RESET << std::endl;
+			
 			if ((_d._error_code = open_r.OpenFiles(_d, request_r, map_server[_d._server])) == (EXIT_FAILURE | EXIT_SKIP))
 			{
 				this->_d._read_fail = true;
-				std::cout << C_RED << "ERROR 1.1" << C_RESET << std::endl;
 				return (EXIT_SUCCESS);
 			}
-			std::cout << C_RED << __FUNCTION__ <<"ERROR 2" << C_RESET << std::endl;
-	
+			
 			if (response_r.MakeResponse(request_r, _d) == EXIT_FAILURE)
 				return (EXIT_FAILURE);
-			std::cout << C_RED << "ERROR 3" << C_RESET << std::endl;
 				
 			this->_d._RequestVector.clear();
 			this->_d._request_string.clear();
@@ -106,10 +102,7 @@ int Client::RecvRequest(std::map<int, std::map<std::string, t_scop> > &map_serve
 //on envoi la reponse avec send si on a bien recu toute la requet biensur
 int Client::SendResponse(void) {
 
-	std::cout << C_BOLDMAGENTA << "SEND : Client = FD[" << this->GetFd() << "] PORT[" << this->GetPort() << "]" << C_RESET << std::endl;
-
 	// PrintHttp(this->_d._http);
-
 	if (send(this->_d._fd_client, this->_d._http , this->_d._response.length() + this->_d._content_size, 0) == -1)
 	{
 		PrintMessageError("SEND", "1");
@@ -121,10 +114,11 @@ int Client::SendResponse(void) {
 		free(_d._http);
 		_d._http = NULL;
 	}
-	std::cout << std::endl << C_BOLDGREEN << "--------------------Response Send--------------------" << C_RESET << std::endl << std::endl;
 	
 	this->_d._send = true;
 	this->_d._read_send_ok = true;
+	
+	std::cout << C_BOLDBLUE << "Client: FD[" << this->GetFd() << "] PORT[" << this->GetPort() << "]" << C_GREEN << " Send Response" << C_RESET << std::endl << std::endl;
 	// memset(this->_d._http, 0, this->_d._response.size() + this->_d._content_size);
 	return(EXIT_SUCCESS);
 };
