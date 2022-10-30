@@ -23,8 +23,6 @@ Server::~Server() {
 void	signal_handler(int sign) {
 
 	(void)sign;
-	std::cout << std::endl << "Clear Server" << std::endl;
-	
 }
 
 int 	signals() {
