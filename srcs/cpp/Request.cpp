@@ -39,7 +39,9 @@ int							Request::GetElementRequest(s_data &d, std::map<int, std::map<std::stri
 	std::map<std::string, t_scop> &MapConf = GetMapConf(d, map_server);
 	
 	TreatmentPath(d);
+
 	ChecklimitExcept(d, MapConf);
+	 
 	CheckUpload(d, MapConf);
 
 	if (GetCorrectMethod() == EXIT_FAILURE)
@@ -278,6 +280,26 @@ int				Request::ChecklimitExcept(s_data &_d, std::map<std::string, t_scop> &MapC
 
 	for ( ; it != ite; it++) {
 
+		if (it->first == "/upload")
+		{
+			if (it->second.limit_except.size() != 0)
+			{
+				_d._limit_GET = false;
+				_d._limit_POST = false;
+				_d._limit_DELETE = false;
+
+				for (long unsigned int i = 0; i < it->second.limit_except.size(); i++)
+				{
+					if (it->second.limit_except[i] == "GET")
+						_d._limit_GET = true;					
+					if (it->second.limit_except[i] == "POST")
+						_d._limit_POST = true;
+					if (it->second.limit_except[i] == "DELETE")
+						_d._limit_DELETE = true;
+				}
+				break;
+			}
+		}
 		if (it->first == this->Get_FirstPath())
 		{
 			if (it->second.limit_except.size() != 0)
@@ -299,9 +321,7 @@ int				Request::ChecklimitExcept(s_data &_d, std::map<std::string, t_scop> &MapC
 			}
 		}
 	}
-	//print limit except
 	// PrintLimitexcept(_d);
-
 	return (EXIT_SUCCESS);
 }
 
@@ -314,7 +334,7 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 	{
 		if (!MapConf["server"].upload[0].empty())
 		{
-			std::cout << C_BOLDGREEN << "Upload path1 = " << MapConf["server"].upload[1] << C_RESET << std::endl;
+			// std::cout << C_BOLDGREEN << "Upload path1 = " << MapConf["server"].upload[1] << C_RESET << std::endl;
 			if (MapConf["server"].upload[0] == "off")
 			{
 				d._upload.first = false;

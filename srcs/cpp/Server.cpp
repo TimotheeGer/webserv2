@@ -345,7 +345,7 @@ int		Server::GetPort(std::map<int, std::map<std::string, t_scop> > &_map_server)
 		}
 	}
 
-	std::cout << std::endl << C_BOLDGREEN << "Launch Server" << C_RESET << std::endl;
+	std::cout << std::endl << C_BOLDGREEN << "Launch Server \U0001F310" << C_RESET << std::endl;
 	std::cout << C_BOLDGREEN << "Port available : " << C_RESET << std::endl;
 	
 	for (size_t i = 0; i < this->_port_tab.size(); i++)

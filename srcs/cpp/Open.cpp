@@ -256,17 +256,17 @@ int	Open::CheckConfCgi(s_data &_d, Request &request_r, std::map<std::string, t_s
 	std::map<std::string, t_scop>::iterator it = MapConf.begin();
 	std::map<std::string, t_scop>::iterator ite = MapConf.end();
 
-	if (MapConf["server"].cgi.size() == 2)
-	{
-		if (!MapConf["server"].cgi[0].empty() && !MapConf["server"].cgi[1].empty())
-		{
-			if (MapConf["server"].cgi[0] == ".php" && MapConf["server"].cgi[1] == "php-cgi")
-			{
-					this->_cgi = true;
-					return (EXIT_SUCCESS);
-			}
-		}
-	}
+	// if (MapConf["server"].cgi.size() == 2)
+	// {
+	// 	if (!MapConf["server"].cgi[0].empty() && !MapConf["server"].cgi[1].empty())
+	// 	{
+	// 		if (MapConf["server"].cgi[0] == ".php" && MapConf["server"].cgi[1] == "php-cgi")
+	// 		{
+	// 				this->_cgi = true;
+	// 				return (EXIT_SUCCESS);
+	// 		}
+	// 	}
+	// }
 	for ( ; it != ite; it++) {
 
 		if (it->first == request_r.Get_FirstPath())

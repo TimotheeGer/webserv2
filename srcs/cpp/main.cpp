@@ -2,7 +2,7 @@
 
 int main(int ac, char **av) {
 
-	std::cout << std::endl << C_BOLDCYAN << "Launch Webserv" << C_RESET << std::endl << std::endl;
+	std::cout << std::endl << C_BOLDCYAN << "Launch Webserv \U0001F680" << C_RESET << std::endl << std::endl;
 
 	Conf 		conf_r;
 	if (conf_r.WorkConf(ac, av) == EXIT_FAILURE)
