@@ -55,6 +55,7 @@ int Open::OpenFiles(s_data &_d, Request &request_r, std::map<std::string, t_scop
 	input.read(_d._content_bin, _d._content_size);
 	//print
 	remove("body_php");
+	remove("fd_php");
 	// PrintContentBin(_d);
 	if (this->_rewrite == true)
 		return (301);
@@ -128,6 +129,13 @@ int Open::SetAutoindex(Request &request_r) {
 		path = request_r.Get_Path() + "/";
 		path2 = request_r.Get_Path().substr(request_r.Get_Path().find("./srcs/www") + 10);	
 	}
+
+	if (path2 == "/")
+	{
+		path2.clear();
+		path2 = ".";
+	}
+
 	std::string index = "./cgi-bin/tree \"" + path + "\" -H " + path2 + " --noreport --charset en-US";
 	std::string launch = ExecuteCommand(index.c_str(), request_r);
 	// PrintAutoIndex(index, launch);
@@ -274,7 +282,7 @@ int	Open::CheckConfCgi(s_data &_d, Request &request_r, std::map<std::string, t_s
 		{
 			if (it->second.cgi.size() == 2)
 			{
-				if (it->second.cgi[0] == ".php" && it->second.cgi[1] == "php-cgi")
+				if (it->second.cgi[0] == ".php" && it->second.cgi[1] == "php-cgi_ubuntu")
 				{
 					this->_cgi = true;
 					break; 

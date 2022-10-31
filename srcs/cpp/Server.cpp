@@ -340,7 +340,10 @@ int		Server::GetPort(std::map<int, std::map<std::string, t_scop> > &_map_server)
 			if (it2->first == "server")
 			{
 				if (CheckIsAllready(this->_port_tab, it2->second.listen) == false)
-					this->_port_tab.push_back(it2->second.listen);
+				{
+					if (!it2->second.listen.empty())
+						this->_port_tab.push_back(it2->second.listen);
+				}
 			}
 		}
 	}
@@ -348,6 +351,12 @@ int		Server::GetPort(std::map<int, std::map<std::string, t_scop> > &_map_server)
 	std::cout << std::endl << C_BOLDGREEN << "Launch Server \U0001F310" << C_RESET << std::endl;
 	std::cout << C_BOLDGREEN << "Port available : " << C_RESET << std::endl;
 	
+	if (this->_port_tab.empty())
+	{
+		std::cout << C_RED << "No port available" << C_RESET << std::endl;
+		return (EXIT_FAILURE);
+	}
+		
 	for (size_t i = 0; i < this->_port_tab.size(); i++)
 		std::cout << C_GREEN << "[" << this->_port_tab[i] << "]" << C_RESET << std::endl;
 	std::cout << std::endl;
@@ -358,7 +367,8 @@ int		Server::GetPort(std::map<int, std::map<std::string, t_scop> > &_map_server)
 //boucle sur les bloc server et init un socket_master dans le vector::_socket_master
 int Server::InitSocketSocketMasters(std::map<int, std::map<std::string, t_scop> > &_map_server) {
 	
-	GetPort(_map_server);
+	if (GetPort(_map_server) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	
 	for (size_t i = 0; i < this->_port_tab.size(); i++ )
 	{

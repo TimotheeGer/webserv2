@@ -13,8 +13,7 @@ SRCS =  srcs/cpp/main.cpp							\
 
 CXX = c++
 
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I ./headers/	\
--g3
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I ./headers/
 
 HEADER = -I headers/
 

@@ -334,7 +334,6 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 	{
 		if (!MapConf["server"].upload[0].empty())
 		{
-			// std::cout << C_BOLDGREEN << "Upload path1 = " << MapConf["server"].upload[1] << C_RESET << std::endl;
 			if (MapConf["server"].upload[0] == "off")
 			{
 				d._upload.first = false;
@@ -353,15 +352,15 @@ int				Request::CheckUpload(s_data &d, std::map<std::string, t_scop> &MapConf) {
 		{
 			if (it->second.upload.size() == 2)
 			{
-				if (it->second.upload[0] == "on" && !it->second.upload[1].empty())
-				{
-					d._upload.first = true;
-					d._upload.second = it->second.upload[1];
-				}
-				else if (it->second.upload[0] == "off")
+				if (it->second.upload[0] == "off")
 				{
 					d._upload.first = false;
 					d._upload.second = "";
+				}
+				else if (it->second.upload[0] == "on" && !it->second.upload[1].empty() &&  d._limit_POST == true)
+				{
+					d._upload.first = true;
+					d._upload.second = it->second.upload[1];
 				}
 			}
 		}
