@@ -36,8 +36,8 @@ int Cgi::InitEnvCgi(Request &request_r, std::map<std::string, t_scop> &MapConf) 
 	_map_cgi_env["REQUEST_METHOD"] = request_r.Get_Method();
 	_map_cgi_env["REQUEST_URI"] = request_r.Get_Path(); 
 
-	_map_cgi_env["SCRIPT_NAME"] = "./cgi-bin/php-cgi";
-	// _map_cgi_env["SCRIPT_NAME"] = "/usr/bin/php-cgi";		 	// Path .conf
+	// _map_cgi_env["SCRIPT_NAME"] = "./cgi-bin/php-cgi";
+	_map_cgi_env["SCRIPT_NAME"] = "/usr/bin/php-cgi";		 	// Path .conf
 
 	// _map_cgi_env["SERVER_NAME"] = MapConf["server"].server_name[0];
 	_map_cgi_env["SERVER_NAME"] = "localhost";
@@ -93,8 +93,9 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 	if (InitEnvCgi(request_r, MapConf) == 500)
 		return (ClearCgi(500));
 
-
+	// std::string arg_test = request_r.Get_Path();
 	// char	*arg[] = {const_cast<char*>(request_r.Get_Path().c_str()), const_cast<char*>("./cgi-bin/php-cgi"), NULL};
+	// char	*arg[] = {const_cast<char*>(arg_test.c_str()), const_cast<char*>("/usr/bin/php-cgi"), NULL};
 	
 
 	std::string path_ = "body_php";
@@ -108,17 +109,17 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 	// _env_cgi_two.push_back(const_cast<char *>("./cgi-bin/php-cgi"));
 	// _env_cgi_two.push_back(const_cast<char *>(str));
 	// _env_cgi_two.push_back(NULL);
-	char **tab = (char**)malloc(sizeof(char *) * 3);
+	char **tab_test = (char**)malloc(sizeof(char *) * 3);
 	
-	tab[0] = strdup("./cgi-bin/php-cgi");								// change linux / mac
+	// tab[0] = strdup("./cgi-bin/php-cgi");								// change linux / mac
 
-	// if (!(tab[0] = strdup("/usr/bin/php-cgi")))
-	// 	return (ClearCgi(500));								// change linux / mac
+	if (!(tab_test[0] = strdup("/usr/bin/php-cgi")))
+		return (ClearCgi(500));								// change linux / mac
 
-	if (!(tab[1] = strdup(request_r.Get_Path().c_str())))
+	if (!(tab_test[1] = strdup(request_r.Get_Path().c_str())))
 		return (ClearCgi(500));
 
-	tab[2] = NULL;
+	tab_test[2] = NULL;
 
 	int pip[2];
 
@@ -151,7 +152,7 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 		close(pip[0]);
 		// execve(_env_cgi_two[0], &_env_cgi_two[0], &_env_cgi[0]);
 		// execve(arg[0], &arg[0], _env_cgi);
-		execve(tab[0], tab, _env_cgi);
+		execve(tab_test[0], tab_test, _env_cgi);
 		exit(1);
 	}
 	else if (pid > 0)
@@ -170,41 +171,46 @@ int	Cgi::InterpretCgi(Request &request_r, std::map<std::string, t_scop> &MapConf
 		
 		if (WIFEXITED(status) && WEXITSTATUS(status))
 			return (ClearCgi(502));
+		
 	}
 	else
 		return (ClearCgi(502));
 
-	ClearCgi(200);
+	ClearEnvCgi();
+	ClearArray(tab_test);
+	// ClearCgi(200);
 
 	return (200);
 };
 
 
 
-// void								Cgi::ClearEnvCgi(void) {
+void								Cgi::ClearEnvCgi(void) {
 
-// 	if (this->_env_cgi != NULL)
-// 	{
-// 		for (unsigned long int i = 0 ; _env_cgi[i] != NULL ; i ++)
-// 			free(_env_cgi[i]);
-// 	}
-// 	_env_cgi = NULL;
-// }
+	if (this->_env_cgi != NULL)
+	{
+		for (unsigned long int i = 0 ; _env_cgi[i] != NULL ; i ++)
+			free(_env_cgi[i]);
+	}
+	free(_env_cgi);
+	_env_cgi = NULL;
+}
 
 
-// void								Cgi::ClearArray(char **tab) {
+void								Cgi::ClearArray(char **tab) {
 
-// 	if (tab != NULL)
-// 	{
-// 		for (unsigned long int i = 0 ; tab[i] != NULL ; i ++)
-// 			free(tab[i]);
-// 	}
-// 	tab = NULL;		
-// }
+	if (tab != NULL)
+	{
+		for (unsigned long int i = 0 ; tab[i] != NULL ; i ++)
+			free(tab[i]);
+	}
+	free(tab);
+	tab = NULL;		
+}
 
 int									Cgi::ClearCgi(int error) {
 
-	// ClearEnvCgi();
+	ClearEnvCgi();
 	// ClearArray(tab);
 	return (error);
 }

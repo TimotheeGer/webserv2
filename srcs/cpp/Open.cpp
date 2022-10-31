@@ -92,6 +92,8 @@ int				Open::GenerateAutoIndex(s_data &_d, Request &request_r) {
 	_d._content_bin[_d._content_size] = '\0';
 	//avec squon a ouvert(input2) on read  dans content_bin
 	input2.read(_d._content_bin, _d._content_size);
+	
+	remove(path.c_str());
 	// PrintContentBin(_d);
 	return (200);
 }
@@ -127,7 +129,6 @@ int Open::SetAutoindex(Request &request_r) {
 		path2 = request_r.Get_Path().substr(request_r.Get_Path().find("./srcs/www") + 10);	
 	}
 	std::string index = "./cgi-bin/tree \"" + path + "\" -H " + path2 + " --noreport --charset en-US";
-	std::cout << C_GREEN << index << C_RESET << std::endl;
 	std::string launch = ExecuteCommand(index.c_str(), request_r);
 	// PrintAutoIndex(index, launch);
 	return (EXIT_SUCCESS);
